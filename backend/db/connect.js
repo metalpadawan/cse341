@@ -1,28 +1,39 @@
+// db/connect.js
 const { MongoClient } = require('mongodb');
 require('dotenv').config();
 
 let _db;
 
-const initDb = (callback) => {
+const initDb = async (callback) => {
   if (_db) {
     console.log('DB already initialized!');
     return callback(null, _db);
   }
 
-  MongoClient.connect(process.env.MONGODB_URI)
-    .then(client => {
-      _db = client.db();   // ✅ Use .db() to select database
-      console.log('MongoDB connected');
-      callback(null, _db);
-    })
-    .catch(err => {
-      callback(err);
+  const uri = process.env.MONGODB_URI;
+  if (!uri) {
+    const err = new Error('MONGODB_URI not set in environment');
+    console.error(err.message);
+    return callback(err);
+  }
+
+  try {
+    const client = await MongoClient.connect(uri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
     });
+    _db = client.db(); // use the default database from URI
+    console.log('✅ MongoDB connected');
+    callback(null, _db);
+  } catch (err) {
+    console.error('❌ MongoDB connection failed:', err.message);
+    callback(err);
+  }
 };
 
 const getDb = () => {
   if (!_db) {
-    throw Error('DB not initialized');
+    throw new Error('DB not initialized');
   }
   return _db;
 };
