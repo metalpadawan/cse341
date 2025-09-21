@@ -1,26 +1,26 @@
-// seed.js
-require('dotenv').config();
 const { MongoClient } = require('mongodb');
+const dotenv = require('dotenv');
+dotenv.config();
 
-const uri = process.env.MONGODB_URI;
-
-const contacts = [
-  { firstName: "Alice", lastName: "Smith", email: "alice@example.com", favoriteColor: "blue", birthday: "1990-05-15" },
-  { firstName: "Bob", lastName: "Jones", email: "bob@example.com", favoriteColor: "red", birthday: "1985-10-30" },
-  { firstName: "Charlie", lastName: "Brown", email: "charlie@example.com", favoriteColor: "green", birthday: "1992-08-08" }
-];
-
-(async () => {
+async function seed() {
+  const client = new MongoClient(process.env.MONGODB_URI);
   try {
-    const client = await MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-    const db = client.db(); // db name from URI
-    await db.collection('contacts').deleteMany({});
-    const result = await db.collection('contacts').insertMany(contacts);
-    console.log('Inserted', result.insertedCount, 'contacts');
+    await client.connect();
+    const db = client.db('contacts'); // ✅ use the correct DB
+    const collection = db.collection('contacts'); // ✅ collection name
+
+    await collection.deleteMany({}); // clear existing data
+
+    await collection.insertMany([
+      { firstName: "Alice", lastName: "Smith", email: "alice@example.com", favoriteColor: "blue", birthday: "1990-05-15" },
+      { firstName: "Bob", lastName: "Jones", email: "bob@example.com", favoriteColor: "red", birthday: "1985-10-30" },
+      { firstName: "Charlie", lastName: "Brown", email: "charlie@example.com", favoriteColor: "green", birthday: "1992-08-08" }
+    ]);
+
+    console.log("✅ Seed data inserted!");
+  } finally {
     await client.close();
-    process.exit(0);
-  } catch (err) {
-    console.error(err);
-    process.exit(1);
   }
-})();
+}
+
+seed();
