@@ -1,28 +1,29 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const mongodb = require('./db/connect');
-const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('./swagger-output.json');
+const { MongoClient } = require('mongodb');
+const dotenv = require('dotenv');
+dotenv.config();
 
-const app = express();
-const port = process.env.PORT || 8080;
+let _db;
 
-app.use(cors());
-app.use(bodyParser.json());
-
-// Routes
-app.use('/contacts', require('./routes/contacts'));
-
-// Swagger docs
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
-mongodb.initDb((err) => {
-  if (err) {
-    console.error(err);
-  } else {
-    app.listen(port, () => {
-      console.log(`✅ Server running on port ${port}`);
-    });
+const initDb = async (callback) => {
+  if (_db) {
+    console.log('Database is already initialized!');
+    return callback(null, _db);
   }
-});
+
+  try {
+    const client = await MongoClient.connect(process.env.MONGODB_URI);
+    _db = client.db(); // will use "contacts" if in your URI
+    console.log('Database initialized');
+    callback(null, _db);
+  } catch (err) {
+    console.error('Failed to connect:', err);
+    callback(err);
+  }
+};
+
+const getDb = () => {
+  if (!_db) throw new Error('Database not initialized');
+  return _db;
+};
+
+module.exports = { initDb, getDb };
