@@ -1,0 +1,35 @@
+### Get all contacts
+GET http://localhost:8080/contacts
+Accept: application/json
+
+### Get a single contact (replace with a real _id from MongoDB)
+GET http://localhost:8080/contacts/68cf1f4b902557563a2b98d9
+Accept: application/json
+
+### Create a new contact
+POST http://localhost:8080/contacts
+Content-Type: application/json
+
+{
+  "firstName": "Dana",
+  "lastName": "White",
+  "email": "dana.white@example.com",
+  "favoriteColor": "purple",
+  "birthday": "1995-12-01"
+}
+
+### Update a contact (replace ID with an existing one)
+PUT http://localhost:8080/contacts/68d859754322fc8861d3076e
+Content-Type: application/json
+
+{
+  "firstName": "Bob",
+  "lastName": "Jones",
+  "email": "bob.jones@updated.com",
+  "favoriteColor": "orange",
+  "birthday": "1985-10-30"
+}
+
+### Delete a contact (replace ID with an existing one)
+DELETE http://localhost:8080/contacts/68d8610b4322fc8861d30771
+
