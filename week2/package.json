@@ -2,7 +2,7 @@
   "name": "temple-api",
   "version": "1.0.0",
   "description": "LDS Temple API for BYU-Idaho WDD230 student projects",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "start": "nodemon server.js",
     "dev": "nodemon server.js",
