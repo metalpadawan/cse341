@@ -1,29 +1,26 @@
-const { MongoClient } = require('mongodb');
+const express = require('express');
 const dotenv = require('dotenv');
+const connectDB = require('./db/connect');
+
 dotenv.config();
 
-let _db;
+const app = express();
+app.use(express.json());
 
-const initDb = async (callback) => {
-  if (_db) {
-    console.log('Database is already initialized!');
-    return callback(null, _db);
-  }
+// connect DB
+connectDB();
 
-  try {
-    const client = await MongoClient.connect(process.env.MONGODB_URI);
-    _db = client.db(); // will use "contacts" if in your URI
-    console.log('Database initialized');
-    callback(null, _db);
-  } catch (err) {
-    console.error('Failed to connect:', err);
-    callback(err);
-  }
-};
+// routes
+app.use('/contacts', require('./routes/contacts'));
+// app.use('/temples', require('./routes/temple')); // ⛔ Disabled since temple.js is missing
 
-const getDb = () => {
-  if (!_db) throw new Error('Database not initialized');
-  return _db;
-};
+// error handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(err.statusCode || 500).json({
+    error: err.message || 'Server Error',
+  });
+});
 
-module.exports = { initDb, getDb };
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

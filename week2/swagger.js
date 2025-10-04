@@ -15,16 +15,16 @@ const doc = {
       lastName: 'Smith',
       email: 'alice@example.com',
       favoriteColor: 'blue',
-      birthday: '1990-05-15'
+      birthday: '1990-05-15',
     },
     NewContact: {
       firstName: 'Dana',
       lastName: 'White',
       email: 'dana@example.com',
       favoriteColor: 'purple',
-      birthday: '1995-12-01'
-    }
-  }
+      birthday: '1995-12-01',
+    },
+  },
 };
 
 const outputFile = './swagger-output.json';
